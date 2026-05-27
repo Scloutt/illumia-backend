@@ -1,0 +1,41 @@
+const questionBank = {
+  // paste your full JSON question bank here
+};
+
+exports.handler = async (event) => {
+  const subject = event.queryStringParameters.subject;
+  const topic = event.queryStringParameters.topic;
+
+  if (!subject || !topic) {
+    return {
+      statusCode: 400,
+      body: JSON.stringify({
+        error: "Missing subject or topic"
+      })
+    };
+  }
+
+  const topicQuestions = questionBank[subject]?.[topic];
+
+  if (!topicQuestions) {
+    return {
+      statusCode: 404,
+      body: JSON.stringify({
+        error: "Topic not found"
+      })
+    };
+  }
+
+  // Shuffle and pick 10
+  const shuffled = topicQuestions.sort(() => 0.5 - Math.random());
+  const selected = shuffled.slice(0, 10);
+
+  return {
+    statusCode: 200,
+    body: JSON.stringify({
+      subject,
+      topic,
+      questions: selected
+    })
+  };
+};
